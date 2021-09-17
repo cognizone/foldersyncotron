@@ -1,0 +1,56 @@
+buildscript {
+  ext {
+    projectVersion = "0.0.1-SNAPSHOT"
+
+    commonsIoVersion = "2.8.0"
+    jcommanderVersion = "1.81"
+    jacksonVersion = "2.12.2"
+  }
+}
+
+plugins {
+  id "org.springframework.boot" version "2.4.5"
+  id "java"
+  id "idea"
+  id "application"
+  id "io.freefair.lombok" version "5.1.1"
+}
+
+repositories {
+  mavenLocal()
+  mavenCentral()
+  maven { url "https://plugins.gradle.org/m2/" }
+  maven { url "https://repo.spring.io/release" }
+}
+
+lombok {
+  generateLombokConfig.enabled = false
+}
+
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
+group = "cogni.zone.tools"
+project.version = "${projectVersion}"
+
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+
+idea {
+  project {
+    jdkName = '11'
+    languageLevel = '11'
+  }
+}
+
+application {
+  mainClass = "cogni.zone.tools.foldersyncotron.app.FolderSyncotron"
+}
+
+dependencies {
+  implementation("commons-io:commons-io:${commonsIoVersion}")
+  implementation("com.beust:jcommander:${jcommanderVersion}")
+  implementation("com.fasterxml.jackson.core:jackson-core:${jacksonVersion}")
+  implementation("com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}")
+  implementation("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
+}
