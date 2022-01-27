@@ -25,6 +25,9 @@ public class CommandCreateDiffData extends FolderSyncotronCommand {
   @Parameter(names = {"-o", "--outputfolder"}, required = true, description = "Folder where to write result (needs to be empty)", validateValueWith = OutputFolderValidator.class)
   private File outputFolder;
 
+  @Parameter(names = {"-z", "--createEmptyFiles"}, required = false, description = "Create empty files (no content, just create structure with existing files)")
+  private boolean createEmptyFiles;
+
   @Override
   public void run() {
     new CreateDiffData(this).run();

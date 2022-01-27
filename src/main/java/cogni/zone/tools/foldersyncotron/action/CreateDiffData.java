@@ -7,6 +7,7 @@ import cogni.zone.tools.foldersyncotron.tools.FileHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.CloseShieldOutputStream;
 
 import java.io.File;
@@ -102,13 +103,21 @@ public class CreateDiffData {
       currentZipSize = 0;
     }
     zipOutputStream.putNextEntry(new ZipEntry(path));
-    FileUtils.copyFile(file, new CloseShieldOutputStream(zipFileOutputStream));
+    CloseShieldOutputStream closeShieldOutputStream = new CloseShieldOutputStream(zipOutputStream);
+    if(commandInfo.isCreateEmptyFiles()) {
+      IOUtils.write(path, closeShieldOutputStream, StandardCharsets.UTF_8);
+    }
+    else {
+      FileUtils.copyFile(file, closeShieldOutputStream);
+    }
+    closeShieldOutputStream.flush();
+    zipOutputStream.flush();
     zipOutputStream.closeEntry();
 
     currentZipSize += file.length();
     totalZipSize += file.length();
 
-    if (currentZipSize >= maxZipContentSize) closeCurrentZip();
+    if (currentZipSize >= maxZipContentSize && !commandInfo.isCreateEmptyFiles()) closeCurrentZip();
   }
 
   @SuppressWarnings("AssignmentToNull")

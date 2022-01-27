@@ -15,6 +15,7 @@ public class FileChecksumCreator {
   public static String createChecksum(File file, CompareMethod compareMethod) {
     if (compareMethod == CompareMethod.crc32) return crc32(file);
     if (compareMethod == CompareMethod.sizeAndDate) return sizeAndDate(file);
+    if (compareMethod == CompareMethod.none) return "none";
     throw new RuntimeException("Unknown CompareMethod " + compareMethod);
   }
 

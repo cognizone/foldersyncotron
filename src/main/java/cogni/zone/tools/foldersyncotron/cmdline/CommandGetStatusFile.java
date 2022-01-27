@@ -16,7 +16,7 @@ public class CommandGetStatusFile extends FolderSyncotronCommand {
 
   private final LocalDateTime startTime = LocalDateTime.now();
 
-  @Parameter(names = {"-c", "--compareMethod"}, description = "sizeAndDate: Faster but less accurate, crc32: Slower but more accurate")
+  @Parameter(names = {"-c", "--compareMethod"}, description = "sizeAndDate: Faster but less accurate, crc32: Slower but more accurate, none: just check if the file exists")
   private CompareMethod compareMethod = CompareMethod.crc32;
 
   @Parameter(names = {"-i", "--inputfolder"}, required = true, description = "Input folder", validateValueWith = InputFolderValidator.class)
