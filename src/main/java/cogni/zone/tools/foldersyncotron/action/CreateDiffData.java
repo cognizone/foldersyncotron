@@ -14,6 +14,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.Map;
 import java.util.Objects;
 import java.util.zip.ZipEntry;
@@ -102,7 +105,13 @@ public class CreateDiffData {
       zipOutputStream.setLevel(9);
       currentZipSize = 0;
     }
-    zipOutputStream.putNextEntry(new ZipEntry(path));
+
+    ZipEntry entry = new ZipEntry(path);
+    BasicFileAttributes basicFileAttributes = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+    FileTime fileTime = FileTime.fromMillis(basicFileAttributes.lastModifiedTime().toMillis());
+    entry.setCreationTime(fileTime);
+    entry.setLastModifiedTime(fileTime);
+    zipOutputStream.putNextEntry(entry);
     CloseShieldOutputStream closeShieldOutputStream = new CloseShieldOutputStream(zipOutputStream);
     if(commandInfo.isCreateEmptyFiles()) {
       IOUtils.write(path, closeShieldOutputStream, StandardCharsets.UTF_8);
@@ -114,8 +123,8 @@ public class CreateDiffData {
     zipOutputStream.flush();
     zipOutputStream.closeEntry();
 
-    currentZipSize += file.length();
-    totalZipSize += file.length();
+    currentZipSize += basicFileAttributes.size();
+    totalZipSize += basicFileAttributes.size();
 
     if (currentZipSize >= maxZipContentSize && !commandInfo.isCreateEmptyFiles()) closeCurrentZip();
   }
