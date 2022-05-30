@@ -15,6 +15,7 @@ public class FileChecksumCreator {
   public static String createChecksum(File file, CompareMethod compareMethod) {
     if (compareMethod == CompareMethod.crc32) return crc32(file);
     if (compareMethod == CompareMethod.sizeAndDate) return sizeAndDate(file);
+    if (compareMethod == CompareMethod.date) return date(file);
     if (compareMethod == CompareMethod.none) return "none";
     throw new RuntimeException("Unknown CompareMethod " + compareMethod);
   }
@@ -29,7 +30,11 @@ public class FileChecksumCreator {
   }
 
   private static String sizeAndDate(File file) {
-    return "sizeAndDate:" + file.length() + "_" + file.lastModified();
+    return "sizeAndDate:" + file.length() + "_" + (file.lastModified() / 1000L); //divide by 1000 because we might lose the milliseconds on the way...
+  }
+
+  private static String date(File file) {
+    return "date:" + (file.lastModified() / 1000L); //divide by 1000 because we might lose the milliseconds on the way...
   }
 
 }
