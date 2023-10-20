@@ -1,7 +1,5 @@
 buildscript {
   ext {
-    projectVersion = "0.0.1-SNAPSHOT"
-
     commonsIoVersion = "2.8.0"
     jcommanderVersion = "1.81"
     jacksonVersion = "2.12.2"
@@ -13,10 +11,37 @@ plugins {
   id "java"
   id "idea"
   id "application"
+  id "maven-publish"
   id "io.freefair.lombok" version "5.1.1"
+  id "pl.allegro.tech.build.axion-release" version "1.14.2"
+}
+
+scmVersion {
+  tag {
+    prefix.set("v")
+    versionSeparator.set("")
+    branchPrefix.set([
+            'release/.*': 'release-v',
+            'hotfix/.*' : 'hotfix-v'
+    ])
+  }
+  nextVersion {
+    suffix.set("SNAPSHOT")
+    separator.set("-")
+  }
 }
 
 repositories {
+  if (project.hasProperty('jenkins-ci')) {
+    maven {
+      url "${System.properties['nexus.url']}/repository/cognizone-group"
+      credentials {
+        username = System.properties['nexus.username']
+        password = System.properties['nexus.password']
+      }
+      allowInsecureProtocol(true)
+    }
+  }
   mavenLocal()
   mavenCentral()
   maven { url "https://plugins.gradle.org/m2/" }
@@ -30,8 +55,8 @@ lombok {
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
-group = "cogni.zone.tools"
-project.version = "${projectVersion}"
+group = "cogni.zone.tools.foldersyncotron"
+project.version = scmVersion.version
 
 compileJava.options.encoding = "UTF-8"
 compileTestJava.options.encoding = "UTF-8"
@@ -53,4 +78,39 @@ dependencies {
   implementation("com.fasterxml.jackson.core:jackson-core:${jacksonVersion}")
   implementation("com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}")
   implementation("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
+}
+
+publishing {
+  publications {
+    mavenWeb(MavenPublication) {
+      groupId = group
+      artifactId = 'foldersyncotron'
+      version = scmVersion.version
+      from components.java
+    }
+  }
+  repositories {
+    if (project.hasProperty("publishToCognizoneArchiva")) {
+      maven {
+        credentials {
+          username = System.properties['archiva.username']
+          password = System.properties['archiva.password']
+        }
+        name = 'cognizone'
+        url = System.properties['archiva.url']
+      }
+    }
+    if (project.hasProperty("publishToCognizoneNexus")) {
+      maven {
+        credentials {
+          username = System.properties['nexus.username']
+          password = System.properties['nexus.password']
+        }
+        def releasesRepoUrl = "${System.properties['nexus.url']}/repository/cognizone-release"
+        def snapshotsRepoUrl = "${System.properties['nexus.url']}/repository/cognizone-snapshot"
+        url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+        allowInsecureProtocol(true)
+      }
+    }
+  }
 }
