@@ -82,11 +82,11 @@ dependencies {
 
 publishing {
   publications {
-    mavenWeb(MavenPublication) {
+    mavenJava(MavenPublication) {
       groupId = group
       artifactId = 'foldersyncotron'
       version = scmVersion.version
-      from components.java
+      artifact(bootJar)
     }
   }
   repositories {
