@@ -55,7 +55,7 @@ lombok {
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
-group = "cogni.zone.tools.foldersyncotron"
+group = "cogni.zone.tool.foldersyncotron"
 project.version = scmVersion.version
 
 compileJava.options.encoding = "UTF-8"
