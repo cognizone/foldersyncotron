@@ -90,16 +90,6 @@ publishing {
     }
   }
   repositories {
-    if (project.hasProperty("publishToCognizoneArchiva")) {
-      maven {
-        credentials {
-          username = System.properties['archiva.username']
-          password = System.properties['archiva.password']
-        }
-        name = 'cognizone'
-        url = System.properties['archiva.url']
-      }
-    }
     if (project.hasProperty("publishToCognizoneNexus")) {
       maven {
         credentials {
