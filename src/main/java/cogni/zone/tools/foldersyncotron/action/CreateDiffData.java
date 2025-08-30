@@ -89,7 +89,8 @@ public class CreateDiffData {
   private void storeFilesToDelete() {
     System.out.println("Not existing files to delete: " + checksumPerFile.size());
     PrintWriter printWriter = new PrintWriter(new File(commandInfo.getOutputFolder(), "notExisting_toRemove.txt"), StandardCharsets.UTF_8);
-    checksumPerFile.keySet().forEach(path -> printWriter.println("rm " + path));
+    //surround filename with single quote so we can have special chars (like "("), then also escape the single quote
+    checksumPerFile.keySet().forEach(path -> printWriter.println("rm '" + path.replace("'", "'\\''") + "'"));
     printWriter.println();
     printWriter.flush();
     printWriter.close();
@@ -145,7 +146,12 @@ public class CreateDiffData {
 
   private void outputCurrentStats() {
     long mb = totalZipSize / 1024 / 1024;
-    System.out.print("\r   Processed " + checkedFiles + " files - added " + addedFiles + " files - total bytes " + mb + "MB - " + lastZipFileIndex + " zip files...");
+    if(commandInfo.isCreateEmptyFiles()) {
+      System.out.print("\r   Processed " + checkedFiles + " files - added " + addedFiles + " files - total bytes " + mb + "MB (fictive, empty files are created) - " + lastZipFileIndex + " zip files...");
+    }
+    else {
+      System.out.print("\r   Processed " + checkedFiles + " files - added " + addedFiles + " files - total bytes " + mb + "MB - " + lastZipFileIndex + " zip files...");
+    }
   }
 
 }
